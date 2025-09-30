@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pneumonia Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Pneumonia Prediction from Lung CT</h1>
+      <p>Upload a single CT slice (PNG/JPG). We’ll classify pneumonia and provide an AI-generated interpretation.</p>
+    </header>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">
+          {% for msg in messages %}
+            <p>{{ msg }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('predict') }}" method="post" enctype="multipart/form-data" class="card">
+      <label for="ctfile" class="file-label">Choose CT file</label>
+      <input id="ctfile" type="file" name="ctfile" accept=".png,.jpg,.jpeg" required />
+      <button type="submit" class="btn">Predict</button>
+      <p class="hint">Accepted: .png, .jpg, .jpeg</p>
+    </form>
+
+    <footer>
+      <small>Models: <code>pneuno_ensemble.keras</code> for pneumonia classification • <code>Sonar-Pro</code> for interpretation</small>
+    </footer>
+  </div>
+</body>
+</html>

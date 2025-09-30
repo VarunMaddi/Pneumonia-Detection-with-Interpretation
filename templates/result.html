@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prediction Result</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Prediction Result</h1>
+      <a href="{{ url_for('index') }}" class="link">&larr; Back</a>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Summary</h2>
+        <p class="pred">
+          <span class="pill {{ 'positive' if pred_label|lower == 'pneumonia' else 'neutral' }}">{{ pred_label }}</span>
+        </p>
+        <p class="confidence">
+          Confidence: <strong>{{ confidence }}%</strong>
+        </p>
+        {% if classes and classes|length > 0 %}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Class</th><th>Probability</th></tr>
+            </thead>
+            <tbody>
+              {% for row in classes %}
+              <tr>
+                <td>{{ row.label }}</td>
+                <td>{{ row.prob }}%</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+        <p class="meta">Uploaded file: <code>{{ uploaded_name }}</code></p>
+      </div>
+
+      <div class="card">
+        <h2>Uploaded Image</h2>
+        <img src="{{ original_img }}" alt="Uploaded CT/X-ray" class="img" />
+      </div>
+
+      <div class="card">
+        <h2>AI Interpretation</h2>
+        <p>{{ interpretation }}</p>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
