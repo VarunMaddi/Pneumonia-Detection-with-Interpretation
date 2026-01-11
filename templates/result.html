@@ -3,30 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prediction Result</title>
+  <title>CT Scan Analysis</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Prediction Result</h1>
+      <h1>CT Scan Analysis</h1>
       <a href="{{ url_for('index') }}" class="link">&larr; Back</a>
     </header>
 
     <section class="grid">
+
+      <!-- MODEL PREDICTION -->
       <div class="card">
-        <h2>Summary</h2>
+        <h2>Model Prediction</h2>
+
         <p class="pred">
-          <span class="pill {{ 'positive' if pred_label|lower == 'pneumonia' else 'neutral' }}">{{ pred_label }}</span>
+          <span class="pill {{ 'positive' if pred_label|lower == 'pneumonia' else 'neutral' }}">
+            {{ pred_label }}
+          </span>
         </p>
+
         <p class="confidence">
           Confidence: <strong>{{ confidence }}%</strong>
         </p>
-        {% if classes and classes|length > 0 %}
+
+        {% if classes %}
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>Class</th><th>Probability</th></tr>
+              <tr>
+                <th>Class</th>
+                <th>Probability</th>
+              </tr>
             </thead>
             <tbody>
               {% for row in classes %}
@@ -39,19 +49,80 @@
           </table>
         </div>
         {% endif %}
-        <p class="meta">Uploaded file: <code>{{ uploaded_name }}</code></p>
+
+        <p class="meta">
+          CNN-based automated analysis
+        </p>
       </div>
 
+      <!-- UPLOADED IMAGE -->
       <div class="card">
-        <h2>Uploaded Image</h2>
-        <img src="{{ original_img }}" alt="Uploaded CT/X-ray" class="img" />
+        <h2>Uploaded CT Scan</h2>
+        <img src="{{ original_img }}" alt="Uploaded CT" class="img" />
+        <p class="meta">File: <code>{{ uploaded_name }}</code></p>
       </div>
 
+      <!-- AI CHATBOT -->
       <div class="card">
-        <h2>AI Interpretation</h2>
-        <p>{{ interpretation }}</p>
+        <h2>AI CT Scan Assistant</h2>
+
+        <div
+          id="chat-box"
+          style="max-height: 300px; overflow-y: auto; margin-bottom: 12px;"
+        >
+          <p class="meta">
+            Ask questions like:
+            <br />• How severe is it?
+            <br />• Where is the abnormality?
+            <br />• Could this be viral?
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <input
+            id="chat-input"
+            type="text"
+            placeholder="Ask about the CT scan..."
+            style="
+              flex: 1;
+              background: #0c152b;
+              border: 1px solid var(--border);
+              color: var(--text);
+              padding: 10px;
+              border-radius: 10px;
+            "
+          />
+          <button class="btn" onclick="sendChat()">Send</button>
+        </div>
       </div>
+
     </section>
   </div>
+
+  <script>
+    async function sendChat() {
+      const input = document.getElementById("chat-input");
+      const box = document.getElementById("chat-box");
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      box.innerHTML += `<p><strong>You:</strong> ${msg}</p>`;
+      input.value = "";
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg })
+        });
+
+        const data = await res.json();
+        box.innerHTML += `<p><strong>AI:</strong> ${data.reply}</p>`;
+        box.scrollTop = box.scrollHeight;
+      } catch (e) {
+        box.innerHTML += `<p><strong>AI:</strong> Error processing request.</p>`;
+      }
+    }
+  </script>
 </body>
 </html>
