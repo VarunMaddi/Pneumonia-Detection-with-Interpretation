@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pneumonia Predictor</title>
+  <title>Pneumonia CT Assistant</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Pneumonia Prediction from Lung CT</h1>
-      <p>Upload a single CT slice (PNG/JPG). We’ll classify pneumonia and provide an AI-generated interpretation.</p>
+      <h1>Pneumonia CT Scan Assistant</h1>
+      <p>Upload a CT slice (PNG/JPG). Ask interactive questions directly about the scan.</p>
     </header>
 
     {% with messages = get_flashed_messages() %}
@@ -25,13 +25,15 @@
 
     <form action="{{ url_for('predict') }}" method="post" enctype="multipart/form-data" class="card">
       <label for="ctfile" class="file-label">Choose CT file</label>
-      <input id="ctfile" type="file" name="ctfile" accept=".png,.jpg,.jpeg" required />
-      <button type="submit" class="btn">Predict</button>
-      <p class="hint">Accepted: .png, .jpg, .jpeg</p>
+      <input id="ctfile" type="file" name="ctfile" accept=".png,.jpg,.jpeg,.dcm" required />
+      <button type="submit" class="btn">Upload & Analyze</button>
+      <p class="hint">Accepted: .png, .jpg, .jpeg, .dcm</p>
     </form>
 
     <footer>
-      <small>Models: <code>pneuno_ensemble.keras</code> for pneumonia classification • <code>Sonar-Pro</code> for interpretation</small>
+      <small>
+        Visual CT analysis powered by <code>Sonar-Pro</code> • Model-independent fallback enabled
+      </small>
     </footer>
   </div>
 </body>
